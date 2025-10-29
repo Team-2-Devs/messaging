@@ -4,9 +4,6 @@ on:
   push:
     branches: [ "main" ]
 
-env:
-  PACKAGE_NAME: Messaging
-
 permissions:
   contents: read
   packages: write
