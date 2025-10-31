@@ -14,11 +14,11 @@ namespace Messaging.RabbitMQ;
 /// - Commands: point-to-point (Direct/Topic), require a routing key, at-most-one consumer.
 /// - Events: pub/sub (Fanout/Topic), routing key optional for Fanout, many consumers.
 /// </remarks>
-public sealed class RabbitMqPublisher : ICommandPublisher, IEventPublisher, IAsyncDisposable
+public sealed class RabbitMQPublisher : ICommandPublisher, IEventPublisher, IAsyncDisposable
 {
     private readonly string _host, _user, _pass;
     private IConnection? _connection;
-    private static readonly JsonSerializerOptions JsonOpts = new(JsonSerializerDefaults.Web);
+    private static readonly JsonSerializerOptions _jsonOpts = new(JsonSerializerDefaults.Web);
 
     // Ensures that only one caller at a time can initialize the connection
     private readonly SemaphoreSlim _initLock = new(1, 1);
@@ -26,7 +26,7 @@ public sealed class RabbitMqPublisher : ICommandPublisher, IEventPublisher, IAsy
     /// <summary>
     /// Creates a new RabbitMQ publisher with credentials and hostname.
     /// </summary>
-    public RabbitMqPublisher(string host, string user, string pass)
+    public RabbitMQPublisher(string host, string user, string pass)
         => (_host, _user, _pass) = (host, user, pass);
 
     /// <summary>
@@ -76,7 +76,7 @@ public sealed class RabbitMqPublisher : ICommandPublisher, IEventPublisher, IAsy
                 .ConfigureAwait(false);
 
         // Serialize command to JSON payload
-        var payload = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(command, JsonOpts));
+        var payload = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(command, _jsonOpts));
 
         // Set content type and persistence
         var props = new BasicProperties { ContentType = "application/json", DeliveryMode = DeliveryModes.Persistent };
@@ -103,7 +103,7 @@ public sealed class RabbitMqPublisher : ICommandPublisher, IEventPublisher, IAsy
                 .ConfigureAwait(false);
 
         // Serialize event to JSON payload
-        var payload = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(@event, JsonOpts));
+        var payload = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(@event, _jsonOpts));
 
         // Set content type and persistence
         var props = new BasicProperties { ContentType = "application/json", DeliveryMode = DeliveryModes.Persistent };
