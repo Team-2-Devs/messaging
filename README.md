@@ -3,6 +3,12 @@ NuGet package containing shared `MessageContracts` and reusable RabbitMQ publish
 
 ---
 
+## Codebase Architecture
+
+![Codebase Architecture](docs/images/messaging-codebase-architecture.jpg)
+
+---
+
 ## Design Class Diagram
 
 ![Design Class Diagram](docs/images/messaging-dcd.jpg)
