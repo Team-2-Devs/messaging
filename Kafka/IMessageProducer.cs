@@ -1,4 +1,4 @@
-namespace Messaging;
+namespace Messaging.Kafka;
 
 /// <summary>
 /// Defines a contract for producing messages to a message broker.
