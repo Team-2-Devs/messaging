@@ -20,6 +20,14 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '9.0.x'
+
+      - name: Add GitHub Packages source
+        run: |
+          dotnet nuget add source "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json" \
+            --name github \
+            --username ${{ github.actor }} \
+            --password ${{ secrets.GITHUB_TOKEN }} \
+            --store-password-in-clear-text
       
       - name: Restore
         run: dotnet restore ./Messaging.csproj
@@ -28,11 +36,8 @@ jobs:
         run: dotnet build ./Messaging.csproj -c Release --no-restore
 
       - name: Pack
-        run: dotnet pack ./Messaging.csproj -c Release --no-build -o ./out
+        run: |
+          dotnet pack ./Messaging.csproj -c Release --no-build -o ./out --version-suffix "ci.$GITHUB_RUN_NUMBER"
 
       - name: Publish to GitHub Packages
-        run: >
-          dotnet nuget push ./out/*.nupkg
-          --api-key ${{ secrets.GITHUB_TOKEN }}
-          --source "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json"
-          --skip-duplicate
+        run: dotnet nuget push ./out/*.nupkg --source github --skip-duplicate
