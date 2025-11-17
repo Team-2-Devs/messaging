@@ -1,8 +1,9 @@
-name: CI (pack & publish NuGet)
+name: Pack and Publish NuGet
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
 
 permissions:
   contents: read
@@ -11,7 +12,6 @@ permissions:
 jobs:
   build-pack-publish:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -28,7 +28,7 @@ jobs:
             --username ${{ github.actor }} \
             --password ${{ secrets.GITHUB_TOKEN }} \
             --store-password-in-clear-text
-      
+
       - name: Restore
         run: dotnet restore ./Messaging.csproj
 
