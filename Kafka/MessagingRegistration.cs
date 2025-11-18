@@ -38,7 +38,6 @@ public static class MessagingRegistration
         };
 
         services.AddSingleton(opts);
-        services.AddSingleton<IMessageProducer, KafkaProducer>();
 
         if (!string.IsNullOrWhiteSpace(groupId))
         {
