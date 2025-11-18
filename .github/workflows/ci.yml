@@ -37,7 +37,7 @@ jobs:
 
       - name: Pack
         run: |
-          dotnet pack ./Messaging.csproj -c Release --no-build -o ./out --version-suffix "ci.$GITHUB_RUN_NUMBER"
+          dotnet pack ./Messaging.csproj -c Release --no-build -o ./out
 
       - name: Publish to GitHub Packages
         run: dotnet nuget push ./out/*.nupkg --source github --skip-duplicate
