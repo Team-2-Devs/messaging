@@ -22,6 +22,12 @@ public sealed class RabbitMQPublisher : IEventPublisher, IAsyncDisposable
     /// <summary>
     /// Creates a new RabbitMQ publisher with credentials and hostname.
     /// </summary>
+    public RabbitMQPublisher(string host, string user, string pass)
+    : this(host, user, pass, 5672) { }
+
+    /// <summary>
+    /// Creates a new RabbitMQ publisher with credentials and hostname and port.
+    /// </summary>
     public RabbitMQPublisher(string host, string user, string pass, int port)
         => (_host, _user, _pass, _port) = (host, user, pass, port);
 
