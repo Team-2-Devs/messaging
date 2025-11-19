@@ -12,6 +12,7 @@ namespace Messaging.RabbitMQ;
 public sealed class RabbitMQPublisher : IEventPublisher, IAsyncDisposable
 {
     private readonly string _host, _user, _pass;
+    private readonly int _port;
     private IConnection? _connection;
     private static readonly JsonSerializerOptions _jsonOpts = new(JsonSerializerDefaults.Web);
 
@@ -21,8 +22,8 @@ public sealed class RabbitMQPublisher : IEventPublisher, IAsyncDisposable
     /// <summary>
     /// Creates a new RabbitMQ publisher with credentials and hostname.
     /// </summary>
-    public RabbitMQPublisher(string host, string user, string pass)
-        => (_host, _user, _pass) = (host, user, pass);
+    public RabbitMQPublisher(string host, string user, string pass, int port)
+        => (_host, _user, _pass, _port) = (host, user, pass, port);
 
     /// <summary>
     /// Lazily initializes the RabbitMQ connection in a thread-safe manner.
@@ -42,6 +43,7 @@ public sealed class RabbitMQPublisher : IEventPublisher, IAsyncDisposable
                 HostName = _host,
                 UserName = _user,
                 Password = _pass,
+                Port = _port,
                 AutomaticRecoveryEnabled = true
             };
 
