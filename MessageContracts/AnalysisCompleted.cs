@@ -5,4 +5,4 @@ namespace Messaging.MessageContracts;
 /// Produced by Analysis Orchestrator, consumed by the Graph Gateway,
 /// where GraphQL subscriptions broadcast updates to clients
 /// </summary>
-public record AnalysisCompleted(bool Success, RecognitionCompletedPayload? RecognitionPayload);
+public record AnalysisCompleted(bool Success, RecognitionCompleted? RecognitionPayload);
