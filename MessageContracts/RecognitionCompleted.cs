@@ -2,7 +2,7 @@ namespace Messaging.MessageContracts;
 
 /// <summary>
 /// Event published when image recognition has completed for an uploaded image.
-/// Produced by svc-ai-vision-adapter, consumed by SvcAnalysisOrchestrator and others.
+/// Produced by svc-ai-vision-adapter, consumed by SvcAnalysisOrchestrator.
 /// </summary>
 public sealed record RecognitionCompleted(AIProviderDto Provider, MachineAggregateDto Aggregate);
 
