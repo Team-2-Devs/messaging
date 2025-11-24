@@ -65,43 +65,30 @@ public sealed class RabbitMQPublisher : IEventPublisher, IAsyncDisposable
     public async Task PublishAsync<T>(string exchange, string routingKey, T @event,
         ExchangeKind kind = ExchangeKind.Fanout, CancellationToken ct = default)
     {
-        Console.WriteLine($"[RabbitMQPublisher] PublishAsync called. " +
-                        $"exchange={exchange}, routingKey={routingKey}, kind={kind}, " +
-                        $"host={_host}, port={_port}, user={_user}");
+        // Ensure we have an active connection
+        await EnsureConnectionAsync(ct).ConfigureAwait(false);
 
-        try
-        {
-            await EnsureConnectionAsync(ct).ConfigureAwait(false);
-            Console.WriteLine("[RabbitMQPublisher] Connection ensured. IsOpen=" + _connection!.IsOpen);
+        // Open a lightweight channel for this publish operation
+        await using var channel = await _connection!.CreateChannelAsync().ConfigureAwait(false);
 
-            await using var channel = await _connection!.CreateChannelAsync().ConfigureAwait(false);
-            Console.WriteLine("[RabbitMQPublisher] Channel opened. ChannelNumber=" + channel.ChannelNumber);
+        // RabbitMQ's ExchangeType class is constants, so we can use the enum name lower-cased.
+        var type = kind.ToString().ToLowerInvariant();
 
-            var type = kind.ToString().ToLowerInvariant();
-            Console.WriteLine($"[RabbitMQPublisher] Declaring exchange '{exchange}' type='{type}'");
-
-            await channel.ExchangeDeclareAsync(exchange, type: type, durable: true, autoDelete: false, arguments: null)
+        // Declare the exchange (idempotent: safe to call repeatedly)
+        await channel.ExchangeDeclareAsync(exchange, type: type, durable: true, autoDelete: false, arguments: null)
                 .ConfigureAwait(false);
 
-            var payloadJson = JsonSerializer.Serialize(@event, _jsonOpts);
-            var payload = Encoding.UTF8.GetBytes(payloadJson);
-            Console.WriteLine($"[RabbitMQPublisher] Payload length={payload.Length} bytes");
+        // Serialize event to JSON payload
+        var payload = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(@event, _jsonOpts));
 
-            var props = new BasicProperties { ContentType = "application/json", DeliveryMode = DeliveryModes.Persistent };
+        // Set content type and persistence
+        var props = new BasicProperties { ContentType = "application/json", DeliveryMode = DeliveryModes.Persistent };
 
-            await channel.BasicPublishAsync<BasicProperties>(
-                    exchange, routingKey, mandatory: false, basicProperties: props, body: payload, cancellationToken: ct)
+        // Publish event to exchange with routing key
+        await channel.BasicPublishAsync<BasicProperties>(exchange, routingKey, mandatory: false, basicProperties: props, body: payload, cancellationToken: ct)
                 .ConfigureAwait(false);
-
-            Console.WriteLine("[RabbitMQPublisher] ✅ BasicPublishAsync completed.");
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine("[RabbitMQPublisher] ❌ Publish failed:");
-            Console.WriteLine(ex);
-            throw;
-        }
     }
+
     /// <summary>
     /// Disposes the RabbitMQ connection and associated resources.
     /// </summary>
