@@ -1,7 +1,7 @@
-# Messaging
-NuGet package containing shared `MessageContracts` and reusable RabbitMQ publisher interfaces and implementations.
+# messaging
+NuGet package containing shared `MessageContracts` and reusable RabbitMQ and Kafka interfaces and implementations.
 
----
+<!-- ---
 
 ## Codebase Architecture
 
@@ -11,7 +11,7 @@ NuGet package containing shared `MessageContracts` and reusable RabbitMQ publish
 
 ## Design Class Diagram
 
-![Design Class Diagram](docs/images/messaging-dcd.jpg)
+![Design Class Diagram](docs/images/messaging-dcd.jpg) -->
 
 ---
 

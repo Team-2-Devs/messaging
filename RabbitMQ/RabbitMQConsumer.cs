@@ -51,27 +51,6 @@ public sealed class RabbitMQConsumer : IEventConsumer
         await Task.Delay(Timeout.Infinite, ct);
     }
 
-    // public async Task RunAsync(
-    // Func<ReadOnlyMemory<byte>, CancellationToken, Task<bool>> handler, CancellationToken ct)
-    // {
-    //     if (_channel is null)
-    //         throw new InvalidOperationException("SubscribeAsync must be called before RunAsync.");
-
-    //     var consumer = new AsyncEventingBasicConsumer(_channel);
-
-    //     consumer.ReceivedAsync += async (_, ea) =>
-    //     {
-    //         var ok = await handler(ea.Body, ct);
-
-    //         if (ok) await _channel.BasicAckAsync(deliveryTag: ea.DeliveryTag, multiple: false, cancellationToken: ct);
-    //         else await _channel.BasicNackAsync(deliveryTag: ea.DeliveryTag, multiple: false, requeue: false, cancellationToken: ct);
-    //     };
-
-    //     await _channel.BasicConsumeAsync(queue: _queue!, autoAck: false, consumer: consumer, cancellationToken: ct);
-
-    //     await Task.Delay(Timeout.Infinite, ct);
-    // }
-
     public async ValueTask DisposeAsync()
     {
         if (_channel != null) await _channel.DisposeAsync();
